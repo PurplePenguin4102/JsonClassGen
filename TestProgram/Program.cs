@@ -8,6 +8,7 @@ namespace TestProgram
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            var Bunny = new CodeGenerator().GenerateCodeFile(@"{'cat' : 'dog'}");
         }
     }
 }
