@@ -7,6 +7,7 @@ namespace TestProgram
     {
         static void Main(string[] args)
         {
+            var tag = "{\"cat\":\"dog\"}";
             Console.WriteLine("Hello World!");
             var Bunny = new CodeGenerator().GenerateCodeFile(@"{'cat' : 'dog'}");
         }

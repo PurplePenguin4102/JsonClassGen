@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Text;
 
 namespace JsonClassGen
 {
@@ -25,13 +26,41 @@ namespace JsonClassGen
 
             if (OpeningTags.Contains(document[0]) && LookForMatchingTag(document[0], document))
             {
-                
+                string tagValue = GetTagValue(document);
             }
             else
             {
                 throw new LexException($"Found an invalid token : {document[0]}");
             }
             return null;
+        }
+
+        private string GetTagValue(string document)
+        {
+            var tagStack = new Stack<char>();
+            var tagContents = new StringBuilder();
+            foreach (char c in document)
+            {
+                char peek = tagStack.Count > 0 ? tagStack.Peek() : ' '; // all spaces were removed
+                if (tagStack.Count > 0)
+                {
+                    tagContents.Append(c);
+                }
+                if (OpeningTags.Contains(c) && peek != '"' && peek != '\'')
+                {
+                    tagStack.Push(c);
+                }
+                else if (ClosingTags.Contains(c) && peek == c)
+                {
+                    tagStack.Pop();
+                }
+                if (tagStack.Count == 0)
+                {
+                    tagContents.Remove(tagContents.Length - 1, 1);
+                    break;
+                }
+            }
+            return tagContents.ToString();
         }
 
         private bool LookForMatchingTag(char openingTag, string document)
@@ -41,18 +70,22 @@ namespace JsonClassGen
             var tagStack = new Stack<char>();
             foreach (char c in document)
             {
-                if (OpeningTags.Contains(c))
+                char peek = tagStack.Count > 0 ? tagStack.Peek() : ' '; // all spaces were removed
+
+                if (OpeningTags.Contains(c) && peek != '"' && peek != '\'')
                 {
                     tagStack.Push(c);
                 }
-                else if (ClosingTags.Contains(c) && tagStack.Peek() == c)
+                else if (ClosingTags.Contains(c) && peek == c)
                 {
                     tagStack.Pop();
                 }
-                else
+                else if (ClosingTags.Contains(c) && peek != c)
                 {
                     throw new LexException($"Invalid closing tag found {c} to match {tagStack.Peek()}");
                 }
+
+
             }
 
             return tagStack.Count() == 0;
