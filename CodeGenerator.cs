@@ -9,14 +9,32 @@ namespace JsonClassGen
     public class CodeGenerator
     {
         private string[] ClassNameStarts = new string[] { "Foo", "Fi", "Fo", "Fum", "Fa", "Fe" };
-        private string[] ClassNameEnds = new string[] { "Bar", "Baz", "Boz", "Biz", "Buz", "Bez" };
-        private char[] OpeningTags = new char[] { '[', '{', '\'', '"' };
-        private char[] ClosingTags = new char[] { ']', '}', '\'', '"' };
+        private readonly string[] ClassNameEnds = new string[] { "Bar", "Baz", "Boz", "Biz", "Buz", "Bez" };
+        private Tag[] Tags = new Tag[] 
+        {
+            new Tag()
+            {
+                Opening = '[',
+                Closing = ']'
+            }, new Tag()
+            {
+                Opening = '{',
+                Closing = '}'
+            }, new Tag()
+            {
+                Opening = '"',
+                Closing = '"'
+            }, new Tag()
+            {
+                Opening = '\'',
+                Closing = '\''
+            }
+        };
 
         public object GenerateCodeFile(string jsonDocument)
         {
             var noSpaces = Regex.Replace(jsonDocument, @"\s+", "");
-            var tokens = Tokenize(jsonDocument);
+            var tokens = Tokenize(noSpaces);
             return null;
         }
 
@@ -24,7 +42,7 @@ namespace JsonClassGen
         {
             var tokens = new List<Token>();
 
-            if (OpeningTags.Contains(document[0]) && LookForMatchingTag(document[0], document))
+            if (Tags.Select(t => t.Opening).Contains(document[0]) && LookForMatchingTag(document[0], document))
             {
                 string tagValue = GetTagValue(document);
             }
@@ -37,20 +55,20 @@ namespace JsonClassGen
 
         private string GetTagValue(string document)
         {
-            var tagStack = new Stack<char>();
+            var tagStack = new Stack<Tag>();
             var tagContents = new StringBuilder();
             foreach (char c in document)
             {
-                char peek = tagStack.Count > 0 ? tagStack.Peek() : ' '; // all spaces were removed
+                var peek = tagStack.Count > 0 ? tagStack.Peek() : new Tag { Opening = ' ', Closing = ' ' }; 
                 if (tagStack.Count > 0)
                 {
                     tagContents.Append(c);
                 }
-                if (OpeningTags.Contains(c) && peek != '"' && peek != '\'')
+                if (Tags.Select(t => t.Opening).Contains(c) && peek.Opening != '"' && peek.Opening != '\'')
                 {
-                    tagStack.Push(c);
+                    tagStack.Push(Tags.First(t => t.Opening == c));
                 }
-                else if (ClosingTags.Contains(c) && peek == c)
+                else if (Tags.Select(t => t.Closing).Contains(c) && peek.Closing == c)
                 {
                     tagStack.Pop();
                 }
@@ -67,20 +85,20 @@ namespace JsonClassGen
         {
             if (openingTag != document[0])
                 throw new LexException($"Invalid opening tag passed {openingTag} where (sub)document starts with {document[0]}");
-            var tagStack = new Stack<char>();
+            var tagStack = new Stack<Tag>();
             foreach (char c in document)
             {
-                char peek = tagStack.Count > 0 ? tagStack.Peek() : ' '; // all spaces were removed
+                var peek = tagStack.Count > 0 ? tagStack.Peek() : new Tag { Opening = ' ', Closing = ' '};
 
-                if (OpeningTags.Contains(c) && peek != '"' && peek != '\'')
+                if (Tags.Select(t => t.Opening).Contains(c) && peek.Opening != '"' && peek.Opening != '\'')
                 {
-                    tagStack.Push(c);
+                    tagStack.Push(Tags.First(t => t.Opening == c));
                 }
-                else if (ClosingTags.Contains(c) && peek == c)
+                else if (Tags.Select(t => t.Closing).Contains(c) && peek.Closing == c)
                 {
                     tagStack.Pop();
                 }
-                else if (ClosingTags.Contains(c) && peek != c)
+                else if (Tags.Select(t => t.Closing).Contains(c) && peek.Closing != c)
                 {
                     throw new LexException($"Invalid closing tag found {c} to match {tagStack.Peek()}");
                 }
