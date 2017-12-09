@@ -58,27 +58,21 @@ namespace JsonClassGen
             return null;
         }
 
-        private string GetTagValue(string document, int pointer)
+        private (string, int) GetTagValue(string document, int pointer)
         {
-            var tagStack = new Stack<Tag>();
-            var tagContents = new StringBuilder();
-            var firstQuot = document.IndexOf('\'');
-            var firstDblQuot = document.IndexOf('"');
-            pointer = firstDblQuot > firstQuot ? firstQuot : firstDblQuot;
+            var firstQuot = document.IndexOf('\'') < 0 ? int.MaxValue : document.IndexOf('\'');
+            var firstDblQuot = document.IndexOf('"') < 0 ? int.MaxValue : document.IndexOf('\'');
+            
+            pointer = Math.Min(firstQuot, firstDblQuot);
             var subDoc = document.Substring(pointer + 1);
             if (document[pointer] == '\'')
             {
-                var tag = subDoc.Substring(0, subDoc.IndexOf('\''));
+                return (subDoc.Substring(0, subDoc.IndexOf('\'')), subDoc.IndexOf('\''));
             }
             else
             {
-                var tag = subDoc.Substring(0, subDoc.IndexOf('"'));
+                return subDoc.Substring(0, subDoc.IndexOf('"')), subDoc.IndexOf('\'');
             }
-            
-            
-
-
-            return tagContents.ToString();
         }
 
         private bool LookForMatchingTag(char openingTag, string document)
