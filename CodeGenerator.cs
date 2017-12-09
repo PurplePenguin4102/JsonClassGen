@@ -30,6 +30,9 @@ namespace JsonClassGen
                 Closing = '\''
             }
         };
+        private readonly char[] Dividers = new char[] { ':', ',' };
+        private List<string> _hierarchy = new List<string>();
+    
 
         public object GenerateCodeFile(string jsonDocument)
         {
@@ -44,40 +47,37 @@ namespace JsonClassGen
 
             if (Tags.Select(t => t.Opening).Contains(document[0]) && LookForMatchingTag(document[0], document))
             {
-                string tagValue = GetTagValue(document);
+                var pointer = 0;
+                var thing = GetTagValue(document, pointer);
             }
             else
             {
                 throw new LexException($"Found an invalid token : {document[0]}");
             }
+            
             return null;
         }
 
-        private string GetTagValue(string document)
+        private string GetTagValue(string document, int pointer)
         {
             var tagStack = new Stack<Tag>();
             var tagContents = new StringBuilder();
-            foreach (char c in document)
+            var firstQuot = document.IndexOf('\'');
+            var firstDblQuot = document.IndexOf('"');
+            pointer = firstDblQuot > firstQuot ? firstQuot : firstDblQuot;
+            var subDoc = document.Substring(pointer + 1);
+            if (document[pointer] == '\'')
             {
-                var peek = tagStack.Count > 0 ? tagStack.Peek() : new Tag { Opening = ' ', Closing = ' ' }; 
-                if (tagStack.Count > 0)
-                {
-                    tagContents.Append(c);
-                }
-                if (Tags.Select(t => t.Opening).Contains(c) && peek.Opening != '"' && peek.Opening != '\'')
-                {
-                    tagStack.Push(Tags.First(t => t.Opening == c));
-                }
-                else if (Tags.Select(t => t.Closing).Contains(c) && peek.Closing == c)
-                {
-                    tagStack.Pop();
-                }
-                if (tagStack.Count == 0)
-                {
-                    tagContents.Remove(tagContents.Length - 1, 1);
-                    break;
-                }
+                var tag = subDoc.Substring(0, subDoc.IndexOf('\''));
             }
+            else
+            {
+                var tag = subDoc.Substring(0, subDoc.IndexOf('"'));
+            }
+            
+            
+
+
             return tagContents.ToString();
         }
 
