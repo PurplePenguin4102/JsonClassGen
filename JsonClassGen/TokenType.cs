@@ -9,6 +9,7 @@ namespace JsonClassGen
         String,
         Object,
         Number,
+        Boolean,
         Array
     }
 }

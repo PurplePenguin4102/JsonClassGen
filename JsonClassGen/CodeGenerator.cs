@@ -44,21 +44,89 @@ namespace JsonClassGen
         private List<Token> Tokenize(string document)
         {
             var tokens = new List<Token>();
+            if (!ValidateDocument(document))
+            {
+                throw new LexException($"Unexpected Character -- at position -- ");
+            }
 
-            if (Tags.Select(t => t.Opening).Contains(document[0]) && LookForMatchingTag(document[0], document))
+            var pointer = 0;
+            var type = GetNextTagType(document, pointer);
+            bool expectKvp = false, expectCsl = false;
+            if (type == TokenType.Object)
             {
-                var pointer = 0;
-                var thing = GetTagValue(document, pointer);
+                expectKvp = true;
             }
-            else
+            else if (type == TokenType.Array)
             {
-                throw new LexException($"Found an invalid token : {document[0]}");
+                expectCsl = true;
             }
-            
-            return null;
+
+            if (expectKvp)
+            {
+                while (true)
+                {
+                    var key = GetNextTagValue(document, pointer);
+                    pointer = key.ptr;
+                    string tokenKey = key.tag;
+                    if (document[pointer + 1] != ':')
+                    {
+                        throw new LexException($"Unexpected Character -- at position -- ");
+                    }
+                    pointer++;
+                    var val = GetTokenType(document, pointer);
+                    pointer = val.ptr;
+                    var tokenType = val.tagType;
+                    var token = new Token
+                    {
+                        Value = tokenKey, // regexMatch to get rid of junk chars
+                        Type = tokenType
+                    };
+                    tokens.Add(token);
+                    if (document[pointer + 1] == ',')
+                    {
+                        continue;
+                    }
+                    else if (document[pointer + 1] == '}')
+                    {
+                        break;
+                    }
+                }
+            }
+
+
+            return tokens;
         }
 
-        private (string, int) GetTagValue(string document, int pointer)
+        private (TokenType tagType, int ptr) GetTokenType(string document, int pointer)
+        {
+            if (document[pointer] == ':')
+                pointer++;
+            char valStart = document[pointer];
+            char[] boolStart = new char[] { 't', 'T', 'f', 'F' };
+            if (boolStart.Contains(valStart) && IsBool(document))
+            {
+                var substr = document.Substring(document.IndexOfAny(new char[] { ',', '}' }));
+            }
+
+           
+            return (TokenType.String, 0);
+        }
+
+        private bool IsBool(string document) => Regex.IsMatch(document, @"^[Tt]rue") || Regex.IsMatch(document, @"^[Ff]alse");
+
+        private TokenType GetNextTagType(string document, int pointer)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool ValidateDocument(string document)
+        {
+            return true;
+        }
+
+
+
+        private (string tag, int ptr) GetNextTagValue(string document, int pointer)
         {
             var firstQuot = document.IndexOf('\'') < 0 ? int.MaxValue : document.IndexOf('\'');
             var firstDblQuot = document.IndexOf('"') < 0 ? int.MaxValue : document.IndexOf('\'');
@@ -71,7 +139,7 @@ namespace JsonClassGen
             }
             else
             {
-                return subDoc.Substring(0, subDoc.IndexOf('"')), subDoc.IndexOf('\'');
+                return (subDoc.Substring(0, subDoc.IndexOf('"')), subDoc.IndexOf('"'));
             }
         }
 
