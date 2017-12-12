@@ -116,7 +116,7 @@ namespace JsonClassGen
 
         private TokenType GetNextTagType(string document, int pointer)
         {
-            throw new NotImplementedException();
+            return document[pointer] == '{' ? TokenType.Object : TokenType.Array;
         }
 
         private bool ValidateDocument(string document)
