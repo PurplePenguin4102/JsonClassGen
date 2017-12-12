@@ -10,6 +10,7 @@ namespace JsonClassGen
         Object,
         Number,
         Boolean,
-        Array
+        Array,
+        Null
     }
 }

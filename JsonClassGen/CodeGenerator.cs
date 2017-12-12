@@ -99,10 +99,18 @@ namespace JsonClassGen
 
         private (TokenType tagType, int ptr) GetTokenType(string document, int pointer)
         {
+            char[] boolStart = new char[] { 't', 'T', 'f', 'F' };
+            char[] strStart = new char[] { '\'', '"' };
+            char objStart = '{';
+            char arrStart = '[';
+            char[] nullStart = new char[] { 'n', 'N' };
+            char negStart = '-';
+
+
             if (document[pointer] == ':')
                 pointer++;
             char valStart = document[pointer];
-            char[] boolStart = new char[] { 't', 'T', 'f', 'F' };
+            
             if (boolStart.Contains(valStart) && IsBool(document))
             {
                 var substr = document.Substring(document.IndexOfAny(new char[] { ',', '}' }));
@@ -132,14 +140,14 @@ namespace JsonClassGen
             var firstDblQuot = document.IndexOf('"') < 0 ? int.MaxValue : document.IndexOf('\'');
             
             pointer = Math.Min(firstQuot, firstDblQuot);
-            var subDoc = document.Substring(pointer + 1);
-            if (document[pointer] == '\'')
+            var subDoc = document.Substring(++pointer);
+            if (firstQuot < firstDblQuot)
             {
-                return (subDoc.Substring(0, subDoc.IndexOf('\'')), subDoc.IndexOf('\''));
+                return (subDoc.Substring(0, subDoc.IndexOf('\'')), pointer + subDoc.IndexOf('\''));
             }
             else
             {
-                return (subDoc.Substring(0, subDoc.IndexOf('"')), subDoc.IndexOf('"'));
+                return (subDoc.Substring(0, subDoc.IndexOf('"')), pointer + subDoc.IndexOf('"'));
             }
         }
 
