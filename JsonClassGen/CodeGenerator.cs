@@ -105,22 +105,41 @@ namespace JsonClassGen
             char arrStart = '[';
             char[] nullStart = new char[] { 'n', 'N' };
             char negStart = '-';
-
+            var tokenType = TokenType.Null;
 
             if (document[pointer] == ':')
                 pointer++;
             char valStart = document[pointer];
             
-            if (boolStart.Contains(valStart) && IsBool(document))
+            if (boolStart.Contains(valStart) && IsBool(document.Substring(pointer)))
             {
-                var substr = document.Substring(document.IndexOfAny(new char[] { ',', '}' }));
+                tokenType = TokenType.Boolean;
+            }
+            else if (strStart.Contains(valStart))
+            {
+                tokenType = TokenType.String;
+            }
+            else if (nullStart.Contains(valStart))
+            {
+                tokenType = TokenType.Null;
+            }
+            else if (valStart == objStart)
+            {
+                tokenType = TokenType.Object;
+            }
+            else if (valStart == arrStart)
+            {
+                tokenType = TokenType.Array;
+            }
+            else if (char.IsDigit(valStart) || valStart == negStart)
+            {
+                tokenType = TokenType.Number;
             }
 
-           
-            return (TokenType.String, 0);
+            return (tokenType, pointer);
         }
 
-        private bool IsBool(string document) => Regex.IsMatch(document, @"^[Tt]rue") || Regex.IsMatch(document, @"^[Ff]alse");
+        private bool IsBool(string document) => Regex.IsMatch(document, @"^[Tt]rue[,}]") || Regex.IsMatch(document, @"^[Ff]alse[,}]");
 
         private TokenType GetNextTagType(string document, int pointer)
         {
