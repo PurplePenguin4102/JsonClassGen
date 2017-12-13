@@ -9,7 +9,7 @@ namespace TestProgram
         {
             var tag = "{\"cat\":\"dog\"}";
             Console.WriteLine("Hello World!");
-            var Bunny = new CodeGenerator().GenerateCodeFile(@"{'cat' : 'dog'}");
+            var Bunny = new CodeGenerator().GenerateCodeFile(@"{'cat' : true, 'dog' : 5.2, 'emu' : ['1', '2', '3'], 'id' : 1}");
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JsonClassGen
 {
-    internal class LexException : Exception
+    public class LexException : Exception
     {
         internal LexException(string msg) : base(msg) { }
     }

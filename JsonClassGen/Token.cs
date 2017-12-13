@@ -4,9 +4,13 @@ using System.Text;
 
 namespace JsonClassGen
 {
-    internal class Token
+    public class Token
     {
-        internal TokenType Type { get; set; }
-        internal string Value { get; set; }
+        public TokenType Type { get; set; }
+        public string Value { get; set; }
+        public override string ToString()
+        {
+            return $"{{{Value} : {Type.ToString()}}}";
+        }
     }
 }

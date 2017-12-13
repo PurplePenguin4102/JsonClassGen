@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JsonClassGen
 {
-    internal enum TokenType
+    public enum TokenType
     {
         String,
         Object,
