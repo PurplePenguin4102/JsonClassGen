@@ -8,19 +8,21 @@ namespace JsonClassGen
 {
     public class CodeGenerator
     {
-        private string[] ClassNameStarts = new string[] { "Foo", "Fi", "Fo", "Fum", "Fa", "Fe" };
-        private readonly string[] ClassNameEnds = new string[] { "Bar", "Baz", "Boz", "Biz", "Buz", "Bez" };
-
         private List<string> _hierarchy = new List<string>();
 
         public object GenerateCodeFile(string jsonDocument)
         {
+            var validator = new Validator();
             var tokenizer = new Tokenizer();
-            var noSpaces = Regex.Replace(jsonDocument, @"\s+", "");
-            var tokens = tokenizer.Tokenize(noSpaces);
+            var emitter = new Emitter();
+            var sanitized = SanitizeDocument(jsonDocument);
+            var tokens = tokenizer.Tokenize(sanitized);
+            emitter.Emit(tokens);
             return null;
         }
 
-        
+        public string SanitizeDocument(string document) => Regex.Replace(document, @"\s+", "");
+
+
     }
 }

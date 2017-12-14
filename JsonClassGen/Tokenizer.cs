@@ -34,10 +34,6 @@ namespace JsonClassGen
         {
 
             var tokens = new List<Token>();
-            if (!ValidateDocument(document))
-            {
-                throw new LexException($"Unexpected Character -- at position -- ");
-            }
 
             var pointer = 0;
             var type = GetNextTagType(document, pointer);
@@ -160,13 +156,6 @@ namespace JsonClassGen
         {
             return document[pointer] == '{' ? TokenType.Object : TokenType.Array;
         }
-
-        private bool ValidateDocument(string document)
-        {
-            return true;
-        }
-
-
 
         public (string tag, int ptr) GetNextTagValue(string document, int pointer)
         {
