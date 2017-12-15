@@ -17,7 +17,7 @@ namespace JsonClassGen
             var emitter = new Emitter();
             var sanitized = SanitizeDocument(jsonDocument);
             var tokens = tokenizer.Tokenize(sanitized);
-            emitter.Emit(tokens);
+            emitter.EmitClass(tokens);
             return null;
         }
 
