@@ -41,7 +41,7 @@ namespace JsonClassGen
 
         private string BasicBooleanProperty(Token tok)
         {
-            throw new NotImplementedException();
+            return string.Format(PropertyFormat, "bool?", tok.Value);
         }
 
         private string BasicNumberProperty(Token tok)
