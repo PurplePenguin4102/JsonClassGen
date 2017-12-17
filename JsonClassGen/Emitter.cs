@@ -36,7 +36,7 @@ namespace JsonClassGen
 
         private string BasicStringProperty(Token tok)
         {
-            throw new NotImplementedException();
+            return string.Format(PropertyFormat, "string", tok.Value);
         }
 
         private string BasicBooleanProperty(Token tok)
@@ -46,12 +46,12 @@ namespace JsonClassGen
 
         private string BasicNumberProperty(Token tok)
         {
-            throw new NotImplementedException();
+            return string.Format(PropertyFormat, "float?", tok.Value);
         }
 
         private string BasicObjectProperty(Token tok)
         {
-            throw new NotImplementedException();
+            return string.Format(PropertyFormat, "object", tok.Value);
         }
 
         private string RandomClassName()
@@ -65,7 +65,7 @@ namespace JsonClassGen
         private string ClassFormat =
 @"public class {0}
     {{
-        {1}
+{1}
     }}";
 
         private string CodeFileFormat =
@@ -75,8 +75,8 @@ using System.Text;
 
 namespace JsonClassGen.Entities
 {{
-{0}
+    {0}
 }}";
-        private string PropertyFormat = "\t\t\tpublic {0} {1} {{ get; set; }}";
+        private string PropertyFormat = "\t\t\tpublic {0} {1} {{ get; set; }}\r\n";
     }
 }
