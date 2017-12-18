@@ -96,6 +96,7 @@ namespace JsonClassGen
                 pointer++;
             var valStart = document[pointer];
             var docFromPtr = document.Substring(pointer);
+            var ptrStart = pointer;
             if (boolStart.Contains(valStart) && IsBool(docFromPtr))
             {
                 tokenType = TokenType.Boolean;
@@ -105,6 +106,11 @@ namespace JsonClassGen
             {
                 tokenType = TokenType.String;
                 pointer += FindStringEnd(docFromPtr) + 1;
+                var value = document.Substring(ptrStart, pointer - ptrStart);
+                if (DateTime.TryParse(value, out var _))
+                {
+                    tokenType = TokenType.DateTime;
+                }
             }
             else if (nullStart.Contains(valStart))
             {
@@ -123,8 +129,13 @@ namespace JsonClassGen
             }
             else if (char.IsDigit(valStart) || valStart == negStart)
             {
-                tokenType = TokenType.Number;
+                tokenType = TokenType.Int;
                 pointer += FindNextDivider(docFromPtr);
+                var value = document.Substring(ptrStart, pointer - ptrStart);
+                if (value.Contains('.'))
+                {
+                    tokenType = TokenType.Decimal;
+                }
             }
 
             return (tokenType, pointer);

@@ -26,12 +26,24 @@ namespace JsonClassGen
                 switch (tok.Type)
                 {
                     case TokenType.Null: properties.Append(BasicObjectProperty(tok)); break;
-                    case TokenType.Number: properties.Append(BasicNumberProperty(tok)); break;
+                    case TokenType.Int: properties.Append(BasicIntProperty(tok)); break;
+                    case TokenType.Decimal: properties.Append(BasicDecimalProperty(tok)); break;
                     case TokenType.Boolean: properties.Append(BasicBooleanProperty(tok)); break;
                     case TokenType.String: properties.Append(BasicStringProperty(tok)); break;
+                    case TokenType.DateTime: properties.Append(BasicDateTimeProperty(tok)); break;
                 }
             }
             return properties;
+        }
+
+        private string BasicDateTimeProperty(Token tok)
+        {
+            return string.Format(PropertyFormat, "DateTime?", tok.Value);
+        }
+
+        private string BasicDecimalProperty(Token tok)
+        {
+            return string.Format(PropertyFormat, "decimal?", tok.Value);
         }
 
         private string BasicStringProperty(Token tok)
@@ -44,7 +56,7 @@ namespace JsonClassGen
             return string.Format(PropertyFormat, "bool?", tok.Value);
         }
 
-        private string BasicNumberProperty(Token tok)
+        private string BasicIntProperty(Token tok)
         {
             return string.Format(PropertyFormat, "float?", tok.Value);
         }

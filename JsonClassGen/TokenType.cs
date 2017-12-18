@@ -7,8 +7,10 @@ namespace JsonClassGen
     public enum TokenType
     {
         String,
+        DateTime,
         Object,
-        Number,
+        Int,
+        Decimal,
         Boolean,
         Array,
         Null
