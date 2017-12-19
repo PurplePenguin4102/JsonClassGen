@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -132,6 +133,7 @@ namespace JsonClassGen
                 tokenType = TokenType.Int;
                 pointer += FindNextDivider(docFromPtr);
                 var value = document.Substring(ptrStart, pointer - ptrStart);
+                decimal.TryParse("123.123e+12", NumberStyles.Float, new CultureInfo("en-US"), out var _);
                 if (value.Contains('.'))
                 {
                     tokenType = TokenType.Decimal;
