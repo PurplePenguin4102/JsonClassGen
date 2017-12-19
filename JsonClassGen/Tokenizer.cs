@@ -106,7 +106,7 @@ namespace JsonClassGen
             {
                 tokenType = TokenType.String;
                 pointer += FindStringEnd(docFromPtr) + 1;
-                var value = document.Substring(ptrStart, pointer - ptrStart);
+                var value = document.Substring(ptrStart + 1, pointer - ptrStart - 2);
                 if (DateTime.TryParse(value, out var _))
                 {
                     tokenType = TokenType.DateTime;
@@ -143,7 +143,7 @@ namespace JsonClassGen
 
         public int FindStringEnd(string subStr)
         {
-            return subStr[0] == '\'' ? subStr.IndexOf('\'') : subStr.IndexOf('"');
+            return subStr[0] == '\'' ? subStr.IndexOf('\'', 1) : subStr.IndexOf('"', 1);
         }
 
         public int FindArrayEnd(string subStr)
