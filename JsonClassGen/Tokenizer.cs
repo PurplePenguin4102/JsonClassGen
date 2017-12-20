@@ -83,10 +83,10 @@ namespace JsonClassGen
             return tokens;
         }
 
+        private char[] strStart = new char[] { '\'', '"' };
         public (TokenType tagType, int ptr) GetTokenType(string document, int pointer)
         {
             char[] boolStart = new char[] { 't', 'T', 'f', 'F' };
-            char[] strStart = new char[] { '\'', '"' };
             char objStart = '{';
             char arrStart = '[';
             char[] nullStart = new char[] { 'n', 'N' };
@@ -130,13 +130,20 @@ namespace JsonClassGen
             }
             else if (char.IsDigit(valStart) || valStart == negStart)
             {
-                tokenType = TokenType.Int;
                 pointer += FindNextDivider(docFromPtr);
                 var value = document.Substring(ptrStart, pointer - ptrStart);
-                decimal.TryParse("123.123e+12", NumberStyles.Float, new CultureInfo("en-US"), out var _);
-                if (value.Contains('.'))
+                
+                if (int.TryParse(value, NumberStyles.Float, new CultureInfo("en-US"), out var _))
+                {
+                    tokenType = TokenType.Int;
+                }
+                else if (decimal.TryParse(value, NumberStyles.Float, new CultureInfo("en-US"), out var _))
                 {
                     tokenType = TokenType.Decimal;
+                }
+                else
+                {
+                    throw new LexException("unknown number type");
                 }
             }
 
@@ -150,12 +157,45 @@ namespace JsonClassGen
 
         public int FindArrayEnd(string subStr)
         {
-            return subStr.IndexOf(']');
+            return FindContainerEnd(subStr, ContainerType.Array);
         }
 
         public int FindObjectEnd(string subStr)
         {
-            return subStr.IndexOf('}');
+            return FindContainerEnd(subStr, ContainerType.Object);
+        }
+
+        private enum ContainerType
+        {
+            Array,
+            Object
+        }
+
+        private int FindContainerEnd(string subStr, ContainerType ct)
+        {
+            var inString = false;
+            char strType = '\0';
+            var endChar = ct == ContainerType.Array ? ']' : '}';
+            for (int i = 0; i < subStr.Length; i++)
+            {
+                var ch = subStr[i];
+                if (inString && ch == strType)
+                {
+                    inString = false;
+                    continue;
+                }
+                if (strStart.Contains(ch))
+                {
+                    inString = true;
+                    strType = ch;
+                    continue;
+                }
+                if (!inString && ch == endChar)
+                {
+                    return i;
+                }
+            }
+            throw new LexException("Unexpected end of file");
         }
 
         public int FindNextDivider(string subStr)

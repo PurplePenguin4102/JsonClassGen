@@ -47,5 +47,64 @@ namespace JsonClassGenTests
             var output = tokenizer.Tokenize(noSpaces);
             Assert.AreEqual(TokenType.Decimal, output[0].Type);
         }
+
+        [TestMethod]
+        public void TestMethod5()
+        {
+            var input = @"{'cat':123.456e-12}";
+            var noSpaces = Regex.Replace(input, @"\s+", "");
+            var tokenizer = new Tokenizer();
+            var output = tokenizer.Tokenize(noSpaces);
+            Assert.AreEqual(TokenType.Decimal, output[0].Type);
+        }
+
+        [TestMethod]
+        public void TestMethod6()
+        {
+            var input = @"{'cat':-123}";
+            var noSpaces = Regex.Replace(input, @"\s+", "");
+            var tokenizer = new Tokenizer();
+            var output = tokenizer.Tokenize(noSpaces);
+            Assert.AreEqual(TokenType.Int, output[0].Type);
+        }
+
+        [TestMethod]
+        public void TestMethod7()
+        {
+            var input = @"{'cat':-123.456}";
+            var noSpaces = Regex.Replace(input, @"\s+", "");
+            var tokenizer = new Tokenizer();
+            var output = tokenizer.Tokenize(noSpaces);
+            Assert.AreEqual(TokenType.Decimal, output[0].Type);
+        }
+
+        [TestMethod]
+        public void TestMethod8()
+        {
+            var input = @"{'cat':-123.456e-12}";
+            var noSpaces = Regex.Replace(input, @"\s+", "");
+            var tokenizer = new Tokenizer();
+            var output = tokenizer.Tokenize(noSpaces);
+            Assert.AreEqual(TokenType.Decimal, output[0].Type);
+        }
+
+        [TestMethod]
+        public void TestMethod9()
+        {
+            var input = @"{'cat':-123.456e-12,'dog':'}'}";
+            var noSpaces = Regex.Replace(input, @"\s+", "");
+            var tokenizer = new Tokenizer();
+            var output = tokenizer.FindObjectEnd(noSpaces);
+            Assert.AreEqual(29, output);
+        }
+        [TestMethod]
+        public void TestMethod10()
+        {
+            var input = @"['cat',-123.456e-12,'dog',']']}";
+            var noSpaces = Regex.Replace(input, @"\s+", "");
+            var tokenizer = new Tokenizer();
+            var output = tokenizer.FindObjectEnd(noSpaces);
+            Assert.AreEqual(29, output);
+        }
     }
 }
