@@ -10,11 +10,12 @@ namespace JsonClassGen
         private readonly string[] ClassNameStarts = new string[] { "Foo", "Fi", "Fo", "Fum", "Fa", "Fe" };
         private readonly string[] ClassNameEnds = new string[] { "Bar", "Baz", "Boz", "Biz", "Buz", "Bez" };
 
-        public void EmitClass(List<Token> tokens)
+        public (string fileName, string fileData) EmitClass(List<Token> tokens)
         {
             var properties = GetBasicProperties(tokens);
             var classFill = string.Format(ClassFormat, RandomClassName(), properties.ToString());
             var codeFile = string.Format(CodeFileFormat, classFill);
+            return ("Fubar.cs", codeFile);
         }
 
         private StringBuilder GetBasicProperties(List<Token> tokens)
@@ -58,7 +59,7 @@ namespace JsonClassGen
 
         private string BasicIntProperty(Token tok)
         {
-            return string.Format(PropertyFormat, "float?", tok.Value);
+            return string.Format(PropertyFormat, "int?", tok.Value);
         }
 
         private string BasicObjectProperty(Token tok)

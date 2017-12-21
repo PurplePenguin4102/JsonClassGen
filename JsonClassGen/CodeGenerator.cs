@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace JsonClassGen
 {
@@ -10,14 +9,21 @@ namespace JsonClassGen
     {
         private List<string> _hierarchy = new List<string>();
 
-        public object GenerateCodeFile(string jsonDocument)
+        public async Task<object> GenerateCodeFileAsync(string jsonDocument)
         {
             var validator = new Validator();
             var tokenizer = new Tokenizer();
             var emitter = new Emitter();
             var sanitized = SanitizeDocument(jsonDocument);
             var tokens = tokenizer.Tokenize(sanitized);
-            emitter.EmitClass(tokens);
+            var codeFile = emitter.EmitClass(tokens);
+            using (FileStream fs = File.OpenWrite(codeFile.fileName))
+            {
+                using (StreamWriter sw = new StreamWriter(fs))
+                {
+                    await sw.WriteAsync(codeFile.fileData);
+                }
+            }
             return null;
         }
 

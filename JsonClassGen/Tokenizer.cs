@@ -133,7 +133,7 @@ namespace JsonClassGen
                 pointer += FindNextDivider(docFromPtr);
                 var value = document.Substring(ptrStart, pointer - ptrStart);
                 
-                if (int.TryParse(value, NumberStyles.Float, new CultureInfo("en-US"), out var _))
+                if (int.TryParse(value, NumberStyles.Integer, new CultureInfo("en-US"), out var _))
                 {
                     tokenType = TokenType.Int;
                 }
@@ -214,7 +214,7 @@ namespace JsonClassGen
         {
             var docFromPtr = document.Substring(pointer);
             var firstQuot = docFromPtr.IndexOf('\'') < 0 ? int.MaxValue : docFromPtr.IndexOf('\'');
-            var firstDblQuot = docFromPtr.IndexOf('"') < 0 ? int.MaxValue : docFromPtr.IndexOf('\'');
+            var firstDblQuot = docFromPtr.IndexOf('"') < 0 ? int.MaxValue : docFromPtr.IndexOf('"');
 
             pointer += Math.Min(firstQuot, firstDblQuot);
             docFromPtr = document.Substring(++pointer);

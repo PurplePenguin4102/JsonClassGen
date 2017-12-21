@@ -1,6 +1,7 @@
 using JsonClassGen;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace JsonClassGenTests
 {
@@ -105,6 +106,23 @@ namespace JsonClassGenTests
             var tokenizer = new Tokenizer();
             var output = tokenizer.FindObjectEnd(noSpaces);
             Assert.AreEqual(29, output);
+        }
+
+        [TestMethod]
+        public async Task RealWorldExample()
+        {
+            var rwInput = @"  {
+    ""Id"": 0,
+    ""Value"": ""string"",
+    ""AttributeId"": 0,
+    ""CreatedDate"": ""2017-12-20T06:06:38.292Z"",
+    ""ModifiedDate"": ""2017-12-20T06:06:38.292Z"",
+    ""CreatedBy"": 0,
+    ""ModifiedBy"": 0
+  }";
+            var cg = new CodeGenerator();
+            await cg.GenerateCodeFileAsync(rwInput);
+
         }
     }
 }
