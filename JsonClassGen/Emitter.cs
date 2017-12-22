@@ -13,9 +13,10 @@ namespace JsonClassGen
         public (string fileName, string fileData) EmitClass(List<Token> tokens)
         {
             var properties = GetBasicProperties(tokens);
-            var classFill = string.Format(ClassFormat, RandomClassName(), properties.ToString());
+            var className = RandomClassName();
+            var classFill = string.Format(ClassFormat, className, properties.ToString());
             var codeFile = string.Format(CodeFileFormat, classFill);
-            return ("Fubar.cs", codeFile);
+            return ($"{className}.cs", codeFile);
         }
 
         private StringBuilder GetBasicProperties(List<Token> tokens)
